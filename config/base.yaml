@@ -1,0 +1,24 @@
+misc:
+  project_name: tmp-project-name
+  run_name: tmp-run-name
+  log_model: False                              # whether to have wandb save artifacts
+  use_auto_scale_batch_size: False
+  enable_progress_bar: False
+  enable_checkpointing: False                   # whether to save model checkpoints
+  log_every_n_steps: 50
+  wandb_save_dir: '/vulcanscratch/psando/wandb'
+  dirpath: '/vulcanscratch/psando/poison_ckpts' # path to save checkpoints
+
+train:
+  model_name: ResNet18
+  dataset: CIFAR10
+  batch_size: 128
+  epochs: 100
+  num_workers: 16
+  learning_rate: 0.1
+  weight_decay: 5e-4
+  momentum: 0.9
+  adversarial_poison_path: False
+  unlearnable_poison_path: False
+  dataset_path: False
+  augmentations_key: 'none'                     # either 'none' 'cutout' 'cutmix' or 'mixup' 
