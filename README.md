@@ -11,4 +11,4 @@ We release our AR poisons as Zip files containing PNG images for easy viewing vi
 - SVHN AR Poison: 
 - STL AR Poison: 
 
-After unzipping, these poisons can be loaded using the `AdversarialPoison`, which subclasses `torch.utils.data.Dataset`. A model which trains on our AR poisons is unable to generalize to the (clean) test set.
+After unzipping, these poisons can be loaded using `AdversarialPoison`, a subclass of `torch.utils.data.Dataset`. A model which trains on our AR poisons is unable to generalize to the (clean) test set.
