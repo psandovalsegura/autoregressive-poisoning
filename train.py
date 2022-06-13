@@ -14,17 +14,7 @@ from lightning_modules.lightning_svhn import LitSVHNModel
 def main(cfg : DictConfig) -> None:
     print(f"[Hydra Config]:\n{OmegaConf.to_yaml(cfg)}")
     if cfg.train.dataset == 'CIFAR10':
-        model = LitCIFARModel(model_name=cfg.train.model_name, 
-                            batch_size=cfg.train.batch_size,
-                            num_workers=cfg.train.num_workers,
-                            learning_rate=cfg.train.learning_rate,
-                            weight_decay=cfg.train.weight_decay,
-                            momentum=cfg.train.momentum,
-                            adversarial_poison_path=cfg.train.adversarial_poison_path,
-                            unlearnable_poison_path=cfg.train.unlearnable_poison_path,
-                            augmentations_key=cfg.train.augmentations_key)
-    elif cfg.train.dataset == 'CIFAR100':
-        model = LitCIFAR100Model(model_name=cfg.train.model_name, 
+        model = LitCIFAR10Model(model_name=cfg.train.model_name, 
                                 batch_size=cfg.train.batch_size,
                                 num_workers=cfg.train.num_workers,
                                 learning_rate=cfg.train.learning_rate,
@@ -33,6 +23,16 @@ def main(cfg : DictConfig) -> None:
                                 adversarial_poison_path=cfg.train.adversarial_poison_path,
                                 unlearnable_poison_path=cfg.train.unlearnable_poison_path,
                                 augmentations_key=cfg.train.augmentations_key)
+    elif cfg.train.dataset == 'CIFAR100':
+        model = LitCIFAR100Model(model_name=cfg.train.model_name, 
+                                 batch_size=cfg.train.batch_size,
+                                 num_workers=cfg.train.num_workers,
+                                 learning_rate=cfg.train.learning_rate,
+                                 weight_decay=cfg.train.weight_decay,
+                                 momentum=cfg.train.momentum,
+                                 adversarial_poison_path=cfg.train.adversarial_poison_path,
+                                 unlearnable_poison_path=cfg.train.unlearnable_poison_path,
+                                 augmentations_key=cfg.train.augmentations_key)
     elif cfg.train.dataset == 'STL10':
         model = LitSTLModel(model_name=cfg.train.model_name, 
                             batch_size=cfg.train.batch_size,

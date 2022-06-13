@@ -5,7 +5,6 @@ from pytorch_lightning.core.lightning import LightningModule
 
 from models import *
 from augmentations import MixUp, CutMix, Cutout, CutMixCrossEntropyLoss
-from autoregressive_ds import ARDeltaDataset, UnlearnableDeltaDataset
 from poison_datasets import AdversarialPoison, UnlearnablePoison
 
 class LitCIFAR10Model(LightningModule):
@@ -81,7 +80,6 @@ class LitCIFAR10Model(LightningModule):
                               lr=self.learning_rate, 
                               momentum=self.momentum, 
                               weight_decay=self.weight_decay)
-        # lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
         lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1)
         return [optimizer], [lr_scheduler]
 
