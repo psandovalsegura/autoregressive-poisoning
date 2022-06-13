@@ -12,11 +12,11 @@ from autoregressive import ARProcessPerturb3Channel, response
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--total', type=int, default=11, help='Number of AR processes to find')
-    parser.add_argument('--num_samples', type=int, default=100, help='number of AR coefficients to sample')
+    parser.add_argument('--total', type=int, default=10, help='Number of AR processes to find')
+    parser.add_argument('--num_samples', type=int, default=1000000, help='number of AR coefficients to sample')
     parser.add_argument('--num_gen_trials', type=int, default=3, help='number of patterns to generate using an AR process')
-    parser.add_argument('--required_nm_response', type=int, default=3, help='lowest required response among non-matching filters')
-    parser.add_argument('--gen_norm_upper_bound', type=int, default=5, help='upper bound on l_inf norm of generated patterns')
+    parser.add_argument('--required_nm_response', type=int, default=10, help='lowest required response among non-matching filters')
+    parser.add_argument('--gen_norm_upper_bound', type=int, default=50, help='upper bound on l_inf norm of generated patterns')
     parser.add_argument('--disable_tqdm', action='store_true', help='disable tqdm progress bar')
     args = parser.parse_args()
 
@@ -68,10 +68,15 @@ def main():
             break
     
     print(f'Completed with {len(ar_processes)} found!')
+    coefficients_list = []
     for a in ar_processes:
         print(a)
+        coefficients_list.append(a.b)
 
-        # TODO(@psando): save values into torch tensor
+    # save coefficients as a list of torch tensors
+    save_filename = f'params-classses-{TOTAL_AR}-mr-{REQUIRED_NM_RESPONSE}.pt'
+    torch.save(coefficients_list, save_filename)
+    print(f'Saved to {save_filename}!')
 
 
 if __name__ == '__main__':

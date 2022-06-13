@@ -26,6 +26,12 @@ class ARProcessPerturb3Channel():
         """
         returns a (num_channels, 32, 32) tensor with p-norm of eps
         updates the start_signal using the ar process parameters
+
+        Params:
+            size: size of the generated perturbation, which may be cropped
+            crop: number of rows and columns to crop
+            p: p-norm of the generated perturbation
+            gaussian_noise: whether to add gaussian noise to the ar process (unrelated to start signal)
         """
         if start_signal is None:
             start_signal = torch.randn((self.num_channels, size[0], size[1]))
