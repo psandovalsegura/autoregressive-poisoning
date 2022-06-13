@@ -1,8 +1,12 @@
 # autoregressive-poisoning
 Code for the paper [Autoregressive Perturbations for Data Poisoning](http://arxiv.org/abs/2206.03693) by Pedro Sandoval-Segura, Vasu Singla, Jonas Geiping, Micah Goldblum, Tom Goldstein, David W. Jacobs.
 
-Below we display a random batch of our CIFAR-10 autoregressive poison:
-![random_batch](imgs/appendix-batches-each-poison.006.png)
+<div align="center">
+  <img width="95%" alt="RandomBatchOfARPoison" src="imgs/appendix-batches-each-poison.006.png">
+</div>
+<div align="center">
+  A random batch of 30 images and the corresponding normalized perturbation from our AR CIFAR-10 Poison.
+</div>
 
 ## Clean-up in progress!
 This repo will be completely updated by 6/19/22.
