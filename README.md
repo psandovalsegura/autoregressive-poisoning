@@ -19,7 +19,7 @@ To find a set of 10 AR processes, run:
 python autoregressive_param_finder.py --total=10 --required_nm_response=10 --gen_norm_upper_bound=50
 ```
 
-This command will save a file named `params-classes-10-mr-10.pt` using `torch.save`. The format will be identical to that of `RANDOM_3C_AR_PARAMS_RNMR_10` within autoregressive_params.py, a list of `torch.tensor`. Additional information can be found in Appendix A.3.
+This command will save a file named `params-classes-10-mr-10.pt` using `torch.save`. The format will be identical to that of `RANDOM_3C_AR_PARAMS_RNMR_10` within **autoregressive_params.py**, a list of `torch.tensor`. Additional information can be found in Appendix A.3.
 
 ## Generating AR perturbations
 
