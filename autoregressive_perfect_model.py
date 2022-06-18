@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from autoregressive_models import ALL_2x2_AR_FILTERS
+from autoregressive_params import ALL_2x2_AR_FILTERS
 
 class PerfectARModel(nn.Module):
     """A simple CNN with 10 filters of size 3x3 followed by 

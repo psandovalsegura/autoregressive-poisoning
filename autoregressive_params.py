@@ -113,3 +113,72 @@ RANDOM_3C_AR_PARAMS_RNMR_10 = [torch.tensor([[[ 0.1561, -0.0710,  0.3743],
                                         [ 0.1772,  0.0321, -0.0000]]])]
 
 RANDOM_100CLASS_3C_AR_PARAMS_RNMR_3 = torch.load('/cfarhomes/psando/Documents/autoregressive-poisoning/params-classes-100-mr-3.pt')
+
+# The coefficients below are not meant to be used for poisoning
+# but instead are used to illustrate the simplicity of PerfectARModel
+# found within autoregressive_perfect_model.py
+
+geo_a1_r12  = np.array([[(-1/2), (-1/4), (-1/8)],
+                        [(-1/16), (-1/32), (-1/64)],
+                        [(-1/128), (-1/256), 0]])
+
+geo_a62_r17 = np.array([[(-6.2/7), (-6.2/49), (-6.2/343)],
+                        [(-6.2/2401), (-6.2/16807), (-6.2/117649)],
+                        [(-6.2/823543), (-6.2/5764801), 0]])
+
+geo_a51_r16 = np.array([[(-5.1/6), (-5.1/36), (-5.1/216)],
+                        [(-5.1/1296), (-5.1/7776), (-5.1/46656)],
+                        [(-5.1/279936), (-5.1/1679616), 0]])
+
+fibonacci   = np.array([[(-1/2), (-1/3), (-1/5)],
+                        [(-1/8), (-1/13), (-1/21)],
+                        [(-1/34), (-1/55), 0]])
+
+geo_a2_r13  = np.array([[(-2/3), (-2/9), (-2/27)],
+                        [(-2/81), (-2/243), (-2/729)],
+                        [(-2/2187), (-2/6561), 0]])
+
+geo_a12_r12 = np.array([[(-1.2/2), (-1.2/4), (-1.2/8)],
+                        [(-1.2/16), (-1.2/32), (-1.2/64)],
+                        [(-1.2/128), (-1.2/256), 0]])
+
+geo_a34_r14  = np.array([[(-3.4/4), (-3.4/16), (-3.4/64)],
+                        [(-3.4/256), (-3.4/1024), (-3.4/4096)],
+                        [(-3.4/16384), (-3.4/65536), 0]])
+
+geo_a15_r12 = np.array([[(-1.5/2), (-1.5/4), (-1.5/8)],
+                        [(-1.5/16), (-1.5/32), (-1.5/64)],
+                        [(-1.5/128), (-1.5/256), 0]])
+
+geo_a25_r13 = np.array([[(-2.5/3), (-2.5/9), (-2.5/27)],
+                        [(-2.5/81), (-2.5/243), (-2.5/729)],
+                        [(-2.5/2187), (-2.5/6561), 0]])
+
+geo_45_r15  = np.array([[(-4.5/5), (-4.5/25), (-4.5/125)],
+                        [(-4.5/625), (-4.5/3125), (-4.5/15625)],
+                        [(-4.5/78125), (-4.5/390625), 0]])
+
+ALL_2x2_AR_PARAMS = {
+    'geo_a1_r12': geo_a1_r12,
+    'geo_a62_r17': geo_a62_r17,
+    'geo_a51_r16': geo_a51_r16,
+    'fibonacci': fibonacci,
+    'geo_a2_r13': geo_a2_r13,
+    'geo_a12_r12': geo_a12_r12,
+    'geo_a34_r14': geo_a34_r14,
+    'geo_a15_r12': geo_a15_r12,
+    'geo_a25_r13': geo_a25_r13,
+    'geo_45_r15': geo_45_r15
+}
+
+ALL_2x2_AR_FILTERS = {}
+for key, value in ALL_2x2_AR_PARAMS.items():
+    # the matching filter is almost identical to the AR
+    # process parameters, but has a -1 as the last entry
+    filter = np.copy(value)
+    filter[2][2] = -1
+
+    # every filter should be normalized so that the sum of 
+    # the coefficients is 1
+    filter = filter / np.sum(filter)
+    ALL_2x2_AR_FILTERS[key] = filter
