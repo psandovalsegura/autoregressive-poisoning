@@ -17,6 +17,7 @@ class LitSVHNModel(LightningModule):
                  momentum=0.9,
                  adversarial_poison_path=False,
                  unlearnable_poison_path=False,
+                 base_dataset_path=None,
                  augmentations_key=None):
         super().__init__()
         self.model = get_model_class_from_name(model_name=model_name)
@@ -27,6 +28,7 @@ class LitSVHNModel(LightningModule):
         self.momentum = momentum
         self.adversarial_poison_path = adversarial_poison_path
         self.unlearnable_poison_path = unlearnable_poison_path
+        self.base_dataset_path = base_dataset_path
         self.augmentations_key = augmentations_key
         self.loss_fn = self.configure_criterion()
         self.save_hyperparameters()
@@ -92,7 +94,7 @@ class LitSVHNModel(LightningModule):
             transforms.Normalize((0.43768218, 0.44376934, 0.47280428), (0.1980301, 0.2010157, 0.19703591)),
         ])
         transform_train = self.configure_transform(transform_train)
-        trainset = datasets.SVHN(root='/vulcanscratch/psando/SVHN', split='train', download=False, transform=transform_train)
+        trainset = datasets.SVHN(root=self.base_dataset_path, split='train', download=False, transform=transform_train)
         if self.adversarial_poison_path:
             trainset = AdversarialPoison(root=self.adversarial_poison_path, baseset=trainset)
         if self.unlearnable_poison_path:
@@ -106,7 +108,7 @@ class LitSVHNModel(LightningModule):
             transforms.ToTensor(),
             transforms.Normalize((0.43768218, 0.44376934, 0.47280428), (0.1980301, 0.2010157, 0.19703591)),
         ])
-        testset = datasets.SVHN(root='/vulcanscratch/psando/SVHN', split='test', download=False, transform=transform_test)
+        testset = datasets.SVHN(root=self.base_dataset_path, split='test', download=False, transform=transform_test)
         testloader = torch.utils.data.DataLoader(testset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
         return testloader
 
@@ -115,7 +117,7 @@ class LitSVHNModel(LightningModule):
             transforms.ToTensor(),
             transforms.Normalize((0.43768218, 0.44376934, 0.47280428), (0.1980301, 0.2010157, 0.19703591)),
         ])
-        testset = datasets.SVHN(root='/vulcanscratch/psando/SVHN', split='test', download=False, transform=transform_test)
+        testset = datasets.SVHN(root=self.base_dataset_path, split='test', download=False, transform=transform_test)
         testloader = torch.utils.data.DataLoader(testset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
         return testloader
 

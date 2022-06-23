@@ -22,6 +22,7 @@ def main(cfg : DictConfig) -> None:
                                 momentum=cfg.train.momentum,
                                 adversarial_poison_path=cfg.train.adversarial_poison_path,
                                 unlearnable_poison_path=cfg.train.unlearnable_poison_path,
+                                base_dataset_path=cfg.train.dataset_path,
                                 augmentations_key=cfg.train.augmentations_key)
     elif cfg.train.dataset == 'CIFAR100':
         model = LitCIFAR100Model(model_name=cfg.train.model_name, 
@@ -32,6 +33,7 @@ def main(cfg : DictConfig) -> None:
                                  momentum=cfg.train.momentum,
                                  adversarial_poison_path=cfg.train.adversarial_poison_path,
                                  unlearnable_poison_path=cfg.train.unlearnable_poison_path,
+                                 base_dataset_path=cfg.train.dataset_path,
                                  augmentations_key=cfg.train.augmentations_key)
     elif cfg.train.dataset == 'STL10':
         model = LitSTLModel(model_name=cfg.train.model_name, 
@@ -42,6 +44,7 @@ def main(cfg : DictConfig) -> None:
                             momentum=cfg.train.momentum,
                             adversarial_poison_path=cfg.train.adversarial_poison_path,
                             unlearnable_poison_path=cfg.train.unlearnable_poison_path,
+                            base_dataset_path=cfg.train.dataset_path,
                             augmentations_key=cfg.train.augmentations_key)
     elif cfg.train.dataset == 'SVHN':
         model = LitSVHNModel(model_name=cfg.train.model_name, 
@@ -52,6 +55,7 @@ def main(cfg : DictConfig) -> None:
                             momentum=cfg.train.momentum,
                             adversarial_poison_path=cfg.train.adversarial_poison_path,
                             unlearnable_poison_path=cfg.train.unlearnable_poison_path,
+                            base_dataset_path=cfg.train.dataset_path,
                             augmentations_key=cfg.train.augmentations_key)
     else:
         raise ValueError(f"Dataset {cfg.train.dataset} not supported.")

@@ -17,6 +17,7 @@ class LitSTLModel(LightningModule):
                  momentum=0.9,
                  adversarial_poison_path=False,
                  unlearnable_poison_path=False,
+                 base_dataset_path=None,
                  augmentations_key=None):
         super().__init__()
         self.model = get_model_class_from_name(model_name=model_name)
@@ -27,6 +28,7 @@ class LitSTLModel(LightningModule):
         self.momentum = momentum
         self.adversarial_poison_path = adversarial_poison_path
         self.unlearnable_poison_path = unlearnable_poison_path
+        self.base_dataset_path = base_dataset_path
         self.augmentations_key = augmentations_key
         self.loss_fn = self.configure_criterion()
         self.save_hyperparameters()
@@ -93,7 +95,7 @@ class LitSTLModel(LightningModule):
             transforms.Normalize((0.44671047,0.43981034,0.40664658), (0.26034108, 0.25657734, 0.27126735)),
         ])
         transform_train = self.configure_transform(transform_train)
-        trainset = datasets.STL10(root='/vulcanscratch/psando/STL', split='train', download=False, transform=transform_train)
+        trainset = datasets.STL10(root=self.base_dataset_path, split='train', download=False, transform=transform_train)
         if self.adversarial_poison_path:
             trainset = AdversarialPoison(root=self.adversarial_poison_path, baseset=trainset)
         if self.unlearnable_poison_path:
@@ -107,7 +109,7 @@ class LitSTLModel(LightningModule):
             transforms.ToTensor(),
             transforms.Normalize((0.44671047, 0.43981034, 0.40664658), (0.26034108, 0.25657734, 0.27126735)),
         ])
-        testset = datasets.STL10(root='/vulcanscratch/psando/STL', split='test', download=False, transform=transform_test)
+        testset = datasets.STL10(root=self.base_dataset_path, split='test', download=False, transform=transform_test)
         testloader = torch.utils.data.DataLoader(testset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
         return testloader
 
@@ -116,7 +118,7 @@ class LitSTLModel(LightningModule):
             transforms.ToTensor(),
             transforms.Normalize((0.44671047, 0.43981034, 0.40664658), (0.26034108, 0.25657734, 0.27126735)),
         ])
-        testset = datasets.STL10(root='/vulcanscratch/psando/STL', split='test', download=False, transform=transform_test)
+        testset = datasets.STL10(root=self.base_dataset_path, split='test', download=False, transform=transform_test)
         testloader = torch.utils.data.DataLoader(testset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
         return testloader
 
