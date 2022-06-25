@@ -17,6 +17,15 @@ We release our AR poisons as Zip files containing PNG images for easy viewing vi
 
 After unzipping, these poisons can be loaded using `AdversarialPoison`, a subclass of `torch.utils.data.Dataset`. A model which trains on our AR poisons is unable to generalize to the (clean) test set.
 
+## Setup instructions
+1. Create a conda environment with necessary dependencies:
+```
+conda create --name arp python=3.6
+conda activate arp
+pip install -r requirements.txt
+```
+2. Modify paths in **config/base.yaml** to point to your choice of dataset and storage. This config is used in **train.py**.
+
 ## Generating AR perturbations
 
 See **notebooks/Generate-AR-Perturbations-from-Coefficients.ipynb** for an example of how to load AR coefficients and generate an AR perturbation of a given size and norm. 
@@ -73,7 +82,9 @@ This training script uses the `WandbLogger` from [PyTorch Lightning](https://pyt
 
 ### AR Perfect Model
 
-The simple CNN which can perfectly classify AR perturbations is in **autoregressive_perfect_model.py**. More information can be found in [Appendix A.2](http://arxiv.org/abs/2206.03693) of the paper. This code was from an earlier version of our code where one AR process was repeated across each of the three channels (as opposed to using a different set of coefficients for each of 3 channels). Early in our work, we used terms from convergent series, and manually specified them in `ALL_2x2_AR_PARAMS`. To avoid confusion, we don't provide actionable code for `PerfectARModel`, but feel free to modify the code and use your own AR coefficients.
+The simple CNN which can perfectly classify AR perturbations is in **autoregressive_perfect_model.py**. We create a demo notebook in **notebooks/Demo-of-AR-Perfect-Model.ipynb**. More information can be found in [Appendix A.2](http://arxiv.org/abs/2206.03693) of the paper. We create a notebook to demonstrate how we can take some AR coefficients, generate perturbations, and use `PerfectARModel` (initialized with the same AR coefficients) to perfectly classify the novel, generated AR perturbations.
+
+Note that the code for `PerfectARModel` was from an earlier version of our repo where one AR process was responsible for each of the three RGB channels (as opposed to using a different set of coefficients for each of 3 channels). Early in our work, we used terms from convergent series, and manually specified them in `ALL_2x2_AR_PARAMS`. 
 
 ### Citation
 
