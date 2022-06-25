@@ -24,7 +24,7 @@ conda create --name arp python=3.6
 conda activate arp
 pip install -r requirements.txt
 ```
-2. Modify paths in **config/base.yaml** to point to your choice of dataset and storage. This config is used in **train.py**.
+2. Modify paths in [config/base.yaml](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/config/base.yaml) to point to your choice of dataset and storage. This config is used in [train.py](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/train.py).
 
 ## Generating AR perturbations
 
@@ -52,17 +52,17 @@ To find a set of 10 AR processes, run:
 python autoregressive_param_finder.py --total=10 --required_nm_response=10 --gen_norm_upper_bound=50
 ```
 
-This command will save a file named `params-classes-10-mr-10.pt` using `torch.save`. The format will be identical to that of `RANDOM_3C_AR_PARAMS_RNMR_10` within **autoregressive_params.py**, a list of `torch.tensor`. Additional information can be found in [Appendix A.3](http://arxiv.org/abs/2206.03693).
+This command will save a file named `params-classes-10-mr-10.pt` using `torch.save`. The format will be identical to that of `RANDOM_3C_AR_PARAMS_RNMR_10` within [autoregressive_params.py](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/autoregressive_params.py), a list of `torch.tensor`. Additional information can be found in [Appendix A.3](http://arxiv.org/abs/2206.03693).
 
 ## Creating a CIFAR-10 poison
 
-Before creating a poison using our script, update `CIFAR_PATH` (and other paths, as required) in **create_ar_poisons_3channel.py** with the location of your CIFAR data. Then, you can create an AR CIFAR-10 poison by calling:
+Before creating a poison using our script, update `CIFAR_PATH` (and other paths, as required) in [create_ar_poisons_3channel.py](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/create_ar_poisons_3channel.py) with the location of your CIFAR data. Then, you can create an AR CIFAR-10 poison by calling:
 
 ```
 python create_ar_poisons_3channel.py ${YOUR_POISON_NAME} --epsilon 1.0 --p_norm 2
 ```
 
-By default, the code uses params from **autoregressive_params.py**, but you can change this behavior if you like. The script also has support for SVHN, STL, and CIFAR-100.
+By default, the code uses params from [autoregressive_params.py](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/autoregressive_params.py), but you can change this behavior if you like. The script also has support for SVHN, STL, and CIFAR-100.
 
 ## Training a model on a poison
 
@@ -76,13 +76,15 @@ To train a model on an AR CIFAR-10 poison:
 ```
 python train.py misc.project_name=${PROJECT_NAME} misc.run_name=${RUN_NAME} train.adversarial_poison_path=${YOUR_POISON_PATH} train.batch_size=128 train.augmentations_key=${AUG}
 ```
-Note that in this command, we specify `train.adversarial_poison_path` to override the config within **config/base.yaml**, and load a poison. You can set `AUG` to either "none", "cutout", "cutmix" or "mixup". Be sure to update other configs such as `num_workers` as necessary.
+Note that in this command, we specify `train.adversarial_poison_path` to override the config within [config/base.yaml](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/config/base.yaml), and load a poison. You can set `AUG` to either "none", "cutout", "cutmix" or "mixup". Be sure to update other configs such as `num_workers` as necessary.
 
 This training script uses the `WandbLogger` from [PyTorch Lightning](https://pytorch-lightning.readthedocs.io/en/latest/), so if you use [Weights and Biases](https://wandb.ai/), you can use their online portal to analyze training curves.
 
-### AR Perfect Model
+### Demo: AR Perfect Model
 
-The simple CNN which can perfectly classify AR perturbations is in **autoregressive_perfect_model.py**. We create a demo notebook in [notebooks/Demo-of-AR-Perfect-Model.ipynb](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/notebooks/Demo-of-AR-Perfect-Model.ipynb). More information can be found in [Appendix A.2](http://arxiv.org/abs/2206.03693) of the paper. The demo notebook demonstrates how we can take some AR coefficients, generate perturbations, and use `PerfectARModel` (initialized with the same AR coefficients) to perfectly classify the novel, generated AR perturbations. `PerfectARModel` is ***not*** trained in any way; it uses manually-specified AR filters (consisting of AR process coefficients) for a single convolution layer.
+To demonstrate the simplicity and separability of AR perturbations, we construct a simple CNN which can perfectly classify AR perturbations in [autoregressive_perfect_model.py](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/autoregressive_perfect_model.py). 
+
+Check out our demo notebook in [notebooks/Demo-of-AR-Perfect-Model.ipynb](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/notebooks/Demo-of-AR-Perfect-Model.ipynb). The demo notebook demonstrates how we can take some AR coefficients, generate perturbations, and use `PerfectARModel` (initialized with the same AR coefficients) to perfectly classify the novel, generated AR perturbations. `PerfectARModel` is ***not*** trained in any way; it uses manually-specified AR filters (consisting of AR process coefficients) for a single convolution layer. More information can be found in [Appendix A.2](http://arxiv.org/abs/2206.03693) of the paper.
 
 Note that the code for `PerfectARModel` was from an earlier version of our repo where one AR process was responsible for each of the three RGB channels (as opposed to using a different set of coefficients for each of 3 channels). Early in our work, we used terms from convergent series, and manually specified them in `ALL_2x2_AR_PARAMS`. 
 
