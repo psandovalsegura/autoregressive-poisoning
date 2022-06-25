@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 ## Generating AR perturbations
 
-See **notebooks/Generate-AR-Perturbations-from-Coefficients.ipynb** for an example of how to load AR coefficients and generate an AR perturbation of a given size and norm. 
+See [notebooks/Generate-AR-Perturbations-from-Coefficients.ipynb](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/notebooks/Generate-AR-Perturbations-from-Coefficients.ipynb) for an example of how to load AR coefficients and generate an AR perturbation of a given size and norm. 
 
 In summary, after loading some AR coefficients, we can call the `generate` function of `ARProcessPerturb3Channel`:
 ```
@@ -82,7 +82,7 @@ This training script uses the `WandbLogger` from [PyTorch Lightning](https://pyt
 
 ### AR Perfect Model
 
-The simple CNN which can perfectly classify AR perturbations is in **autoregressive_perfect_model.py**. We create a demo notebook in **notebooks/Demo-of-AR-Perfect-Model.ipynb**. More information can be found in [Appendix A.2](http://arxiv.org/abs/2206.03693) of the paper. We create a notebook to demonstrate how we can take some AR coefficients, generate perturbations, and use `PerfectARModel` (initialized with the same AR coefficients) to perfectly classify the novel, generated AR perturbations.
+The simple CNN which can perfectly classify AR perturbations is in **autoregressive_perfect_model.py**. We create a demo notebook in [notebooks/Demo-of-AR-Perfect-Model.ipynb](https://github.com/psandovalsegura/autoregressive-poisoning/blob/main/notebooks/Demo-of-AR-Perfect-Model.ipynb). More information can be found in [Appendix A.2](http://arxiv.org/abs/2206.03693) of the paper. The demo notebook demonstrates how we can take some AR coefficients, generate perturbations, and use `PerfectARModel` (initialized with the same AR coefficients) to perfectly classify the novel, generated AR perturbations. `PerfectARModel` is ***not*** trained in any way; it uses manually-specified AR filters (consisting of AR process coefficients) for a single convolution layer.
 
 Note that the code for `PerfectARModel` was from an earlier version of our repo where one AR process was responsible for each of the three RGB channels (as opposed to using a different set of coefficients for each of 3 channels). Early in our work, we used terms from convergent series, and manually specified them in `ALL_2x2_AR_PARAMS`. 
 
