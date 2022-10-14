@@ -1,5 +1,5 @@
 # autoregressive-poisoning
-Code for the paper [Autoregressive Perturbations for Data Poisoning](http://arxiv.org/abs/2206.03693) by Pedro Sandoval-Segura, Vasu Singla, Jonas Geiping, Micah Goldblum, Tom Goldstein, David W. Jacobs.
+Code for the paper [Autoregressive Perturbations for Data Poisoning](http://arxiv.org/abs/2206.03693) by Pedro Sandoval-Segura, Vasu Singla, Jonas Geiping, Micah Goldblum, Tom Goldstein, David W. Jacobs. (Accepted to NeurIPS 2022)
 
 <div align="center">
   <img width="95%" alt="RandomBatchOfARPoison" src="imgs/appendix-batches-each-poison.006.png">
