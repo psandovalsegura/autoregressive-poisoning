@@ -9,13 +9,18 @@ Code for the paper [Autoregressive Perturbations for Data Poisoning](http://arxi
 </div>
 
 ## Train your own network on our poisons!
-We release our AR poisons as Zip files containing PNG images for easy viewing via [Google Drive](https://drive.google.com/drive/folders/1ze0cKAXNcPRkC0TMmObMj-g7Gspp1DpL?usp=sharing). This includes a
-- CIFAR-10 AR Poison: ar-cifar-10.zip
-- CIFAR-100 AR Poison: ar-cifar-100.zip
-- SVHN AR Poison: ar-svhn.zip
-- STL AR Poison: ar-stl.zip
+We release our AR poisons as Zip files containing PNG images for easy viewing via [Google Drive](https://drive.google.com/drive/folders/1ze0cKAXNcPRkC0TMmObMj-g7Gspp1DpL?usp=sharing). This includes the following poisons:
+| Poison              |     Zip Filename     |      Bound      | Test Set Accuracy |
+|---------------------|:--------------------:|:---------------:|:-----------------:|
+| CIFAR-10 AR Poison  |    [ar-cifar-10.zip](https://drive.google.com/drive/folders/1ze0cKAXNcPRkC0TMmObMj-g7Gspp1DpL?usp=sharing)   |    ε=1 in L2    |       11.75%      |
+| CIFAR-100 AR Poison |   [ar-cifar-100.zip](https://drive.google.com/drive/folders/1ze0cKAXNcPRkC0TMmObMj-g7Gspp1DpL?usp=sharing)   |    ε=1 in L2    |       4.24%       |
+| SVHN AR Poison      |      [ar-svhn.zip](https://drive.google.com/drive/folders/1ze0cKAXNcPRkC0TMmObMj-g7Gspp1DpL?usp=sharing)     |    ε=1 in L2    |       6.77%       |
+| STL-10 AR Poison    |      [ar-stl.zip](https://drive.google.com/drive/folders/1ze0cKAXNcPRkC0TMmObMj-g7Gspp1DpL?usp=sharing)      |    ε=3 in L2    |       11.65%      |
+| CIFAR-10 AR Poison  | [linf-ar-cifar-10.zip](https://drive.google.com/drive/folders/1ze0cKAXNcPRkC0TMmObMj-g7Gspp1DpL?usp=sharing) | ε=8/255 in Linf |       20.49%      |
 
-After unzipping, these poisons can be loaded using `AdversarialPoison`, a subclass of `torch.utils.data.Dataset`. A model which trains on our AR poisons is unable to generalize to the (clean) test set.
+After unzipping, these poisons can be loaded using `AdversarialPoison`, a subclass of `torch.utils.data.Dataset`. In the table, test set accuracy refers to the test set performance of a ResNet-18 which trains on the poison and is evaluated on the corresponding clean test set. A model which trains on our AR poisons is unable to generalize to the (clean) test set.
+
+Note: While we focus on poisoning with an L2-norm bound on perturbations, we release a sample CIFAR-10 Linf AR poison. For details on AR poisoning in Linf, please see [Appendix A.6](http://arxiv.org/abs/2206.03693) of our paper.
 
 ## Setup instructions
 1. Create a conda environment with necessary dependencies:
