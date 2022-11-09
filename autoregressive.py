@@ -22,7 +22,7 @@ class ARProcessPerturb3Channel():
             self.b = torch.tensor(b).float()
         self.num_channels = 3
 
-    def generate(self, start_signal=None, size=(32,32), eps=(8/255), crop=0, p=np.inf, gaussian_noise=False):
+    def generate(self, size=(32,32), eps=(8/255), crop=0, p=np.inf, gaussian_noise=False):
         """
         returns a (num_channels, 32, 32) tensor with p-norm of eps
         updates the start_signal using the ar process parameters
@@ -33,34 +33,23 @@ class ARProcessPerturb3Channel():
             p: p-norm of the generated perturbation
             gaussian_noise: whether to add gaussian noise to the ar process (unrelated to start signal)
         """
-        if start_signal is None:
-            start_signal = torch.randn((self.num_channels, size[0], size[1]))
-            clear_start_signal = False
-        else:
-            start_signal = start_signal.detach().clone()
-            clear_start_signal = True
-        
+        start_signal = torch.randn((self.num_channels, size[0], size[1]))
         kernel_size = 3
         rows_to_update = size[0] - kernel_size + 1
         cols_to_update = size[1] - kernel_size + 1
-        for c in range(self.num_channels):
-            for i in range(rows_to_update):
-                for j in range(cols_to_update):
-                    val = torch.dot(start_signal[c][i][j:j+kernel_size], self.b[c][0])    # row 1 of ar params
-                    val += torch.dot(start_signal[c][i+1][j:j+kernel_size], self.b[c][1]) # row 2 of ar params
-                    val += torch.dot(start_signal[c][i+2][j:j+kernel_size], self.b[c][2]) # row 3 of ar params
-                    
-                    # update entry
-                    noise = torch.randn(1) if gaussian_noise else 0
-                    start_signal[c][i+kernel_size-1][j+kernel_size-1] = val + noise
-        
-        if clear_start_signal:
-            start_signal[:,:2,:] = torch.zeros((self.num_channels, 2, size[1])) # clear first two rows
-            start_signal[:,:,:2] = torch.zeros((self.num_channels, size[0], 2)) # clear first two cols
+
+        ar_coeff = self.b.unsqueeze(dim=1) # (3, 1, 3, 3)
+        for i in range(rows_to_update):
+            for j in range(cols_to_update):
+                val = torch.nn.functional.conv2d(start_signal[:,i:i+kernel_size,j:j+kernel_size], ar_coeff, groups=self.num_channels)
+                
+                # update entry
+                noise = torch.randn(1) if gaussian_noise else 0
+                start_signal[:, i+kernel_size-1, j+kernel_size-1] = val.squeeze() + noise
         
         start_signal_crop = start_signal[:,crop:, crop:]
 
-        # Scale perturbation to be of size eps in L2
+        # Scale perturbation to be of size eps in Lp norm
         generated_norm = torch.norm(start_signal_crop, p=p, dim=(0,1,2))
         scale = (1/generated_norm) * eps
         start_signal_crop = scale * start_signal_crop
