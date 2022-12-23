@@ -20,7 +20,7 @@ We release our AR poisons as Zip files containing PNG images for easy viewing vi
 
 After unzipping, these poisons can be loaded using `AdversarialPoison`, a subclass of `torch.utils.data.Dataset`. In the table, test set accuracy refers to the test set performance of a ResNet-18 which trains on the poison and is evaluated on the corresponding clean test set. A model which trains on our AR poisons is unable to generalize to the (clean) test set.
 
-Note: While we focus on poisoning with an L2-norm bound on perturbations, we release a sample CIFAR-10 Linf AR poison. For details on AR poisoning in Linf, please see [Appendix A.6](http://arxiv.org/abs/2206.03693) of our paper.
+**Disclaimer**: While we focus on poisoning with an L2-norm bound on perturbations, we release a sample CIFAR-10 Linf AR poison. Note that the AR coeffients used in this poison are suboptimal, and we recommend reporting L2 threat model results. For details on AR poisoning in Linf, please see [Appendix A.6](http://arxiv.org/abs/2206.03693) of our paper.
 
 ## Setup instructions
 1. Create a conda environment with necessary dependencies:
