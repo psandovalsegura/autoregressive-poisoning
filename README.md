@@ -97,10 +97,15 @@ Note that the code for `PerfectARModel` was from an earlier version of our repo 
 
 If you find this work useful for your research, please cite our paper:
 ```
-@article{sandoval2022autoregressive,
-  title={Autoregressive Perturbations for Data Poisoning},
-  author={Sandoval-Segura, Pedro and Singla, Vasu and Geiping, Jonas and Goldblum, Micah and Goldstein, Tom and Jacobs, David W},
-  journal={arXiv preprint arXiv:2206.03693},
-  year={2022}
+@inproceedings{sandovalsegura2022autoregressive,
+ author = {Sandoval-Segura, Pedro and Singla, Vasu and Geiping, Jonas and Goldblum, Micah and Goldstein, Tom and Jacobs, David},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Koyejo and S. Mohamed and A. Agarwal and D. Belgrave and K. Cho and A. Oh},
+ pages = {27374--27386},
+ publisher = {Curran Associates, Inc.},
+ title = {Autoregressive Perturbations for Data Poisoning},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2022/file/af66ac99716a64476c07ae8b089d59f8-Paper-Conference.pdf},
+ volume = {35},
+ year = {2022}
 }
 ```
