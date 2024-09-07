@@ -40,7 +40,7 @@ def main():
         gen_norms = torch.stack(gen_norms)
 
         # if any generated signal diverges or is nan, regenerate AR process
-        if torch.isnan(gen_norm) or (gen_norms > GEN_NORM_UPPER_BOUND).any():
+        if torch.isnan(gen).any() or torch.isnan(gen_norm) or (gen_norms > GEN_NORM_UPPER_BOUND).any():
             continue
 
         # ensure filters from other AR processes have high response
