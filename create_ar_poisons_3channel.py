@@ -35,7 +35,7 @@ def create_ar_processes(dataset):
     if dataset in ['CIFAR10', 'STL10', 'SVHN']:
         b_list = RANDOM_3C_AR_PARAMS_RNMR_10
         print(f'Using {len(b_list)} AR processes for {dataset}')
-    elif dataset in ['CIFAR100']:
+    elif dataset in ['CIFAR100', 'IMAGENET100']:
         b_list = RANDOM_100CLASS_3C_AR_PARAMS_RNMR_3
         print(f'Using {len(b_list)} AR processes for {dataset}')
     else:
@@ -99,16 +99,49 @@ class SVHN_w_indices(datasets.SVHN):
         if self.target_transform is not None:
             target = self.target_transform(target)
         return img, target, index
+    
+class ImageNetMini_w_indices(datasets.ImageNet):
+    def __init__(self, root, split='train', **kwargs):
+        super(ImageNetMini_w_indices, self).__init__(root, split=split, **kwargs)
+        self.new_targets = []
+        self.new_images = []
+        for i, (file, cls_id) in enumerate(self.imgs):
+            if cls_id <= 99:
+                self.new_targets.append(cls_id)
+                self.new_images.append((file, cls_id))
+        self.imgs = self.new_images
+        self.targets = self.new_targets
+        self.samples = self.imgs
+        print('[class ImageNetMini] num samples:', len(self.samples))
+        print('[class ImageNetMini] num targets:', len(self.targets))
+        return
+    
+    def __getitem__(self, index: int):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (sample, target) where target is class_index of the target class.
+        """
+        path, target = self.samples[index]
+        sample = self.loader(path)
+        if self.transform is not None:
+            sample = self.transform(sample)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+            
+        return sample, target, index
 
 def create_poison(args):
     ar_processes = create_ar_processes(args.dataset)
 
     # Data loading code
     if args.dataset == 'CIFAR10':
-        train_dataset = CIFAR10_w_indices(root=os.environ.get('CIFAR_PATH', '/vulcanscratch/psando/cifar-10/'), train=True, download=False, transform=transforms.ToTensor())
+        train_dataset = CIFAR10_w_indices(root=os.environ.get('CIFAR_PATH', '/fs/vulcan-datasets/CIFAR'), train=True, download=False, transform=transforms.ToTensor())
         noise_size, noise_crop = (36, 36), 4
     elif args.dataset == 'CIFAR100':
-        train_dataset = CIFAR100_w_indices(root=os.environ.get('CIFAR_PATH', '/vulcanscratch/psando/cifar-10/'), train=True, download=False, transform=transforms.ToTensor())
+        train_dataset = CIFAR100_w_indices(root=os.environ.get('CIFAR_PATH', '/fs/vulcan-datasets/CIFAR'), train=True, download=False, transform=transforms.ToTensor())
         noise_size, noise_crop = (36, 36), 4
     elif args.dataset == 'STL10':
         train_dataset = STL10_w_indices(root=os.environ.get('STL_PATH', '/vulcanscratch/psando/STL/'), split='train', download=False, transform=transforms.ToTensor())
@@ -116,26 +149,31 @@ def create_poison(args):
     elif args.dataset == 'SVHN':
         train_dataset = SVHN_w_indices(root=os.environ.get('SVHN_PATH', '/vulcanscratch/psando/SVHN/'), split='train', download=False, transform=transforms.ToTensor())
         noise_size, noise_crop = (36, 36), 4
+    elif args.dataset == 'IMAGENET100':
+        test_transform = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor()]
+        )
+        train_dataset = ImageNetMini_w_indices(root=os.environ.get('IMAGENET_PATH', '/vulcanscratch/psando/imagenet/'), split='train', transform=test_transform)
+        noise_size, noise_crop = (226, 226), 2
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=512, shuffle=False, num_workers=args.workers)
 
-    poison_img = []
 
     for batch_idx, batch in enumerate(train_loader):
-        inputs, target, index = batch
+        inputs, target, indices = batch
+        adv_inputs = perturb_with_ar_process(ar_processes, inputs, target, args.p_norm, noise_size, noise_crop, eps=args.epsilon)
+        print(f'Exporting at [{batch_idx}/{len(train_loader)}]')
+        # Save poison
+        export_poison(args, adv_inputs, indices, path=args.save_path)
         
-        advinputs = perturb_with_ar_process(ar_processes, inputs, target, args.p_norm, noise_size, noise_crop, eps=args.epsilon)
-        poison_img.append(advinputs.cpu())
-    
-    poison_img = torch.cat(poison_img, dim=0)
+    print('Dataset fully exported.')
 
-    # Save poison
-    export_poison(args, poison_img, train_loader.dataset, path=args.save_path)
-
-
-def export_poison(args, poison_img, trainset, path=None):
+def export_poison(args, adv_inputs, indices, path=None):
     if path is None:
-        directory = '/fs/vulcan-projects/robust_geometry_vsingla/psando_poisons/paper'
-        path = os.path.join(directory, args.noise_name)
+        directory = '/fs/nexus-scratch/psando/psando_poisons/paper'
+        path = os.path.join(directory, args.noise_name, 'data')
+        os.makedirs(path, exist_ok=True)
 
     def _torch_to_PIL(image_tensor):
         """Torch->PIL pipeline as in torchvision.utils.save_image."""
@@ -144,23 +182,19 @@ def export_poison(args, poison_img, trainset, path=None):
         image_PIL = PIL.Image.fromarray(image_torch_uint8.numpy())
         return image_PIL
 
-    def _save_image(input, label, idx, location, train=True):
+    def _save_image(im, idx, location):
         """Save input image to given location, add poison_delta if necessary."""
         filename = os.path.join(location, str(idx) + '.png')
-        adv_input = poison_img[idx]
-        _torch_to_PIL(adv_input).save(filename)
+        _torch_to_PIL(im).save(filename)
 
     # if mode == 'poison_dataset':
-    os.makedirs(os.path.join(path, 'data'), exist_ok=True)
-    for input, label, idx in trainset:
-        _save_image(input, label, idx, location=os.path.join(path, 'data'), train=True)
-
-    print('Dataset fully exported.')
+    for adv_input, idx in zip(adv_inputs, indices):
+        _save_image(adv_input, idx.item(), location=path)
 
 def main():
     parser = argparse.ArgumentParser(description='Create synthetic poison dataset')
     parser.add_argument('noise_name', type=str, default='', help='Choose the name of the poison')
-    parser.add_argument('dataset', type=str, help='Dataset to use: CIFAR10 or STL10')
+    parser.add_argument('dataset', type=str, help='Dataset to use: CIFAR10, CIFAR100, STL10, SVHN, or IMAGENET100')
     parser.add_argument('--workers', type=int, default=1, help='Number of data loading workers')
     parser.add_argument('--save_path', type=str, default=None, help='Path to save the dataset')
     parser.add_argument('--epsilon', type=float, default=8.0, help='Epsilon for the AR perturbation L-inf (8/255 by default)')

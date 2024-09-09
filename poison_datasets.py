@@ -7,7 +7,7 @@ class AdversarialPoison(torch.utils.data.Dataset):
     def __init__(self, root, baseset):
         self.baseset = baseset
         self.transform = self.baseset.transform
-        self.samples = os.listdir(os.path.join(root, 'data'))
+        self.samples = sorted(os.listdir(os.path.join(root, 'data')), key=lambda x: int(x.split('.')[0]))
         self.root = root
 
         # Load images into memory to prevent IO from disk
